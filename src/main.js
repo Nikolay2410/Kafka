@@ -3,26 +3,27 @@ const express = require("express");
 const { exec } = require("child_process");
 const app = express();
 
+const { Kafka } = require("kafkajs");
+
+const kafka = new Kafka({
+  clientId: "kafka",
+  brokers: ["localhost:9092"],
+});
+const consumer = kafka.consumer({ groupId: "test-group" });
+
 app.use(cors());
 
-// respond with "hello world" when a GET request is made to the homepage
-app.get("/", function (req, res) {
-  exec(
-    "~/kafka/bin/kafka-console-consumer.sh --bootstrap-server 'localhost:9092' --topic TutorialTopic --from-beginning",
-    (error, stdout, stderr) => {
-      if (error) {
-        res.send(`error: ${error.message}`);
-        return;
-      }
-      if (stderr) {
-        res.send(`stderr: ${stderr}`);
-        return;
-      }
-      res.send(`stdout: ${stdout}`);
-    }
-  );
+app.get("/", async function (req, res) {
+  await consumer.connect();
+  await consumer.subscribe({ topic: "YarmarkaTopic", fromBeginning: true });
+
+  await consumer.run({
+    eachMessage: async ({ topic, partition, message }) => {
+      res.send({
+        value: message.value.toString(),
+      });
+    },
+  });
 });
 
-app.listen(3000, () => {
-  console.log("https://localhost:3000/");
-});
+app.listen(3000);
