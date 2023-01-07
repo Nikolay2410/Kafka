@@ -1,0 +1,48 @@
+const cors = require("cors");
+const express = require("express");
+const { exec } = require("child_process");
+const app = express();
+const { Kafka } = require('kafkajs')
+app.use(cors());
+
+
+const kafka = new Kafka({
+  clientId: 'my-app',
+  brokers: ['kafka:9092'],
+})
+const consumer = kafka.consumer({ groupId: 'test-group' })
+
+await consumer.connect()
+await consumer.subscribe({ topic: 'YarmarkaTopic', fromBeginning: true })
+
+await consumer.run({
+  eachMessage: async ({ topic, partition, message }) => {
+    console.log({
+      value: message.value.toString(),
+    })
+  },
+})
+
+
+
+
+
+
+
+
+
+app.get("/", function (req, res) {
+
+await consumer.connect()
+await consumer.subscribe({ topic: 'YarmarkaTopic', fromBeginning: true })
+
+await consumer.run({
+  eachMessage: async ({ topic, partition, message }) => {
+    console.log({
+      value: message.value.toString(),
+    })
+  },
+}
+});
+
+app.listen(3000);

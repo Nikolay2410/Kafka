@@ -22,11 +22,11 @@ async function consumeAllMessages() {
     consumer.run({
       eachMessage: ({ topic, partition, message }) => {
         clearTimeout(timeout);
-        timeout = setTimeout(resolve, 1000);
+        timeout = setTimeout(resolve, 200);
         messages.push(message.value.toString());
       },
     });
-    consumer.seek({ topic: "YarmarkaTopic", partition: 0, offset: 1000 });
+   consumer.seek({ topic: "YarmarkaTopic", partition: 0, offset: 0 });
   });
   await consumer.disconnect();
   return messages;
