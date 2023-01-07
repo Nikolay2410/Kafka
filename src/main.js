@@ -1,5 +1,6 @@
 const cors = require("cors");
 const express = require("express");
+const path = require("path");
 const { Kafka } = require("kafkajs");
 
 const PORT = 3000;
@@ -12,6 +13,7 @@ const consumer = kafka.consumer({ groupId: "my-group" });
 
 const app = express();
 app.use(cors());
+app.use(express.static(path.join("client", "src")));
 
 async function consumeAllMessages() {
   const messages = [];
@@ -26,13 +28,13 @@ async function consumeAllMessages() {
         messages.push(message.value.toString());
       },
     });
-   consumer.seek({ topic: "YarmarkaTopic", partition: 0, offset: 0 });
+    consumer.seek({ topic: "YarmarkaTopic", partition: 0, offset: 0 });
   });
   await consumer.disconnect();
   return messages;
 }
 
-app.get("/", async function (req, res) {
+app.get("api/messages", async function (req, res) {
   try {
     const messages = await consumeAllMessages();
     res.send(messages);
@@ -42,5 +44,5 @@ app.get("/", async function (req, res) {
 });
 
 app.listen(PORT, () => {
-  console.log(`server started https://localhost:${PORT}`);
+  console.log(`server started http://localhost:${PORT}`);
 });
