@@ -34,7 +34,7 @@ async function consumeAllMessages() {
   return messages;
 }
 
-app.get("api/messages", async function (req, res) {
+app.get("/api/messages", async function (req, res) {
   try {
     const messages = await consumeAllMessages();
     res.send(messages);
