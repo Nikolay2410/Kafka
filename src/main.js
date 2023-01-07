@@ -19,6 +19,8 @@ app.get("/", async function (req, res) {
 
   await consumer.run({
     eachMessage: async ({ topic, partition, message }) => {
+      const prefix = `${topic}[${partition} | ${message.offset}] / ${message.timestamp}`
+      console.log(`- ${prefix} ${message.key}#${message.value}`)
       res.send({
         value: message.value.toString(),
       });
