@@ -1,7 +1,8 @@
-const cors = require("cors");
-const express = require("express");
-const path = require("path");
-const { Kafka } = require("kafkajs");
+import fetch from "node-fetch";
+import cors from "cors";
+import express from "express";
+import path from "path";
+import { Kafka } from "kafkajs";
 
 const PORT = 3000;
 
@@ -18,7 +19,7 @@ app.use(express.static(path.join("client", "src")));
 async function consumeAllMessages() {
   const messages = [];
   await consumer.connect();
-  await consumer.subscribe({ topic: "YarmarkaTopic", fromBeginning: true });
+  await consumer.subscribe({ topic: "YarmarkaProjects", fromBeginning: true });
   await new Promise(async (resolve) => {
     let timeout = setTimeout(resolve, 1000);
     consumer.run({
@@ -28,20 +29,29 @@ async function consumeAllMessages() {
         messages.push(message.value.toString());
       },
     });
-    consumer.seek({ topic: "YarmarkaTopic", partition: 0, offset: 0 });
+    consumer.seek({ topic: "YarmarkaProjects", partition: 0, offset: 0 });
   });
   await consumer.disconnect();
   return messages;
 }
 
+async function getData(url) {
+  const response = await fetch(url);
+  const data = await response.json();
+  return data;
+}
+
 app.get("/api/messages", async function (req, res) {
   try {
     const messages = await consumeAllMessages();
+    console.log("api: ", messages[1]);
+    const data = await getData(messages[1]);
+    console.log("Data: ", data);
     res.send(messages);
   } catch (error) {
     res.send(error).status(400);
   }
-});
+});    
 
 app.listen(PORT, () => {
   console.log(`server started http://localhost:${PORT}`);
