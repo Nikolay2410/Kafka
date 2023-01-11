@@ -1,19 +1,46 @@
-async function fetchMessages() {
-  const res = await fetch("/api/messages");
+async function fetchMessages(obj) {
+  str = "/api/messages";
+  switch (obj) {
+    case "projects":
+      str += "?obj=projects";
+      break;
+    case "students":
+      str += "?obj=students";
+      break;
+    default:
+      str += "/";
+  }
+  if (inp.value != "") {
+    str += "&id=" + inp.value;
+  }
+  const res = await fetch(str);
   if (!res.ok) throw new Error(res.statusText);
   return res.json();
 }
 
-const btnEl = document.getElementById("btn");
+const btnProject = document.getElementById("btnProject");
+const btnStudent = document.getElementById("btnStudent");
 const titleEl = document.getElementById("title");
 const messagesListEl = document.getElementById("messages");
+const inp = document.getElementById("inp");
 
-btnEl.addEventListener("click", async () => {
+btnProject.addEventListener("click", async () => {
   try {
-    titleEl.textContent = "Сообщения";
-    const messages = await fetchMessages();
-    messagesListEl.innerHTML = JSON.stringify(messages);
+    titleEl.textContent = "Проекты";
+    const messages = await fetchMessages("projects");
+    messagesListEl.innerHTML = JSON.stringify(messages, null, 2);
   } catch (error) {
     titleEl.textContent = String(error);
   }
 });
+
+btnStudent.addEventListener("click", async () => {
+  try {
+    titleEl.textContent = "Студенты";
+    const messages = await fetchMessages("students");
+    messagesListEl.innerHTML = JSON.stringify(messages, null, 2);
+  } catch (error) {
+    titleEl.textContent = String(error);
+  }
+});
+
