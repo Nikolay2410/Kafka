@@ -44,14 +44,36 @@ async function getData(url) {
 app.get("/api/messages", async function (req, res) {
   try {
     const messages = await consumeAllMessages();
-    console.log("api: ", messages[1]);
-    const data = await getData(messages[1]);
-    console.log("Data: ", data);
-    res.send(messages);
+    console.log("req.obj = ", req.query.obj);
+    if (req.query.obj) {
+      var id = "";
+      if (req.query.id) {
+        id = req.query.id;
+      }
+      console.log("id: ", id);
+      switch (req.query.obj) {
+        case "projects":
+          const messageProjects = messages[0] + "/" + id;
+          console.log("api: ", messageProjects);
+          const dataProjects = await getData(messageProjects);
+          console.log("DataProjects: ", dataProjects);
+          res.send(dataProjects);
+          break;
+        case "students":
+          const messageStudents = messages[1] + "/" + id;
+          console.log("api: ", messageStudents);
+          const dataStudents = await getData(messageStudents);
+          console.log("DataStudents: ", dataStudents);
+          res.send(dataStudents);
+          break;
+        default:
+          console.log("Other:", messages);
+      }
+    }
   } catch (error) {
     res.send(error).status(400);
   }
-});    
+});
 
 app.listen(PORT, () => {
   console.log(`server started http://localhost:${PORT}`);
