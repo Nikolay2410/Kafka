@@ -7,12 +7,18 @@ async function fetchMessages(obj) {
     case "students":
       str += "?obj=students";
       break;
+    case "participations":
+      str += "?obj=participations";
+      break;
     default:
       str += "/";
   }
-  if (inp.value != "") {
-    str += "&id=" + inp.value;
+  if (obj != "participations") {
+    if (inp.value != "") {
+      str += "&id=" + inp.value;
+    }
   }
+
   const res = await fetch(str);
   if (!res.ok) throw new Error(res.statusText);
   return res.json();
@@ -20,9 +26,40 @@ async function fetchMessages(obj) {
 
 const btnProject = document.getElementById("btnProject");
 const btnStudent = document.getElementById("btnStudent");
+const btnPart = document.getElementById("btnPart");
 const titleEl = document.getElementById("title");
 const messagesListEl = document.getElementById("messages");
 const inp = document.getElementById("inp");
+
+function getParticipants(array) {
+  var i = 0;
+  var result = "";
+  while (i < array.length) {
+    const str = JSON.stringify(array[i]);
+    const obj = JSON.parse(str);
+    const lenPart = Object.keys(obj.participations).length;
+    var j = 0;
+    result += "| Project id = " + obj.id;
+    while (j < lenPart) {
+      result += "| candidate id = " + obj.participations[j].candidate.id;
+      result += "| fio = " + obj.participations[j].candidate.fio + "\n";
+      j++;
+    }
+    i++;
+  }
+  return result;
+}
+
+btnPart.addEventListener("click", async () => {
+  try {
+    messagesListEl.innerHTML = "";
+    titleEl.textContent = "Заявки студентов";
+    const messages = await fetchMessages("participations");
+    messagesListEl.innerHTML = getParticipants(messages);
+  } catch (error) {
+    titleEl.textContent = String(error);
+  }
+});
 
 btnProject.addEventListener("click", async () => {
   try {

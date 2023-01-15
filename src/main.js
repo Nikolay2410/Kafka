@@ -41,6 +41,23 @@ async function getData(url) {
   return data;
 }
 
+async function getAllProjects(url) {
+  var i = 1;
+  const allProjects = []
+  const param = "/";
+  while (i <= 241) {
+    if (i != 57 && i != 86 && i != 161) {
+      var urlStr = url + param + i;
+      console.log("getting data from " + urlStr);
+      allProjects.push(await getData(urlStr));
+    }
+    i++;
+  }
+  console.log("Первая возвращаемая страница: ");
+  console.log(allProjects[0]);
+  return allProjects;
+}
+
 app.get("/api/messages", async function (req, res) {
   try {
     const messages = await consumeAllMessages();
@@ -56,15 +73,19 @@ app.get("/api/messages", async function (req, res) {
           const messageProjects = messages[0] + "/" + id;
           console.log("api: ", messageProjects);
           const dataProjects = await getData(messageProjects);
-          console.log("DataProjects: ", dataProjects);
+          console.log("Data Projects: ", dataProjects);
           res.send(dataProjects);
           break;
         case "students":
           const messageStudents = messages[1] + "/" + id;
           console.log("api: ", messageStudents);
           const dataStudents = await getData(messageStudents);
-          console.log("DataStudents: ", dataStudents);
+          console.log("Data Students: ", dataStudents);
           res.send(dataStudents);
+          break;
+        case "participations":
+          const allProjects = await getAllProjects(messages[0]);
+          res.send(allProjects);
           break;
         default:
           console.log("Other:", messages);
