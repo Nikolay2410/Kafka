@@ -26,6 +26,7 @@ const inp = document.getElementById("inp");
 
 btnProject.addEventListener("click", async () => {
   try {
+    messagesListEl.innerHTML = "";
     titleEl.textContent = "Проекты";
     const messages = await fetchMessages("projects");
     messagesListEl.innerHTML = JSON.stringify(messages, null, 2);
@@ -36,6 +37,7 @@ btnProject.addEventListener("click", async () => {
 
 btnStudent.addEventListener("click", async () => {
   try {
+    messagesListEl.innerHTML = "";
     titleEl.textContent = "Студенты";
     const messages = await fetchMessages("students");
     messagesListEl.innerHTML = JSON.stringify(messages, null, 2);
