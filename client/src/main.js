@@ -39,10 +39,12 @@ function getParticipants(array) {
     const obj = JSON.parse(str);
     const lenPart = Object.keys(obj.participations).length;
     var j = 0;
-    result += "| Project id = " + obj.id;
+    result += "------------------------------------------------<br>";
+    result += "Project id = " + obj.id;
+    result += " | title = " + obj.title + "<br><br>";
     while (j < lenPart) {
-      result += "| candidate id = " + obj.participations[j].candidate.id;
-      result += "| fio = " + obj.participations[j].candidate.fio + "\n";
+      result += "candidate id = " + obj.participations[j].candidate.id;
+      result += "| fio = " + obj.participations[j].candidate.fio + " <br>";
       j++;
     }
     i++;
